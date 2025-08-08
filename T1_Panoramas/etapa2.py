@@ -1,8 +1,6 @@
 import cv2
 import matplotlib.pyplot as plt
 
-# Etapa 3 ainda em fase de testes.
-
 # Carregar as imagens
 img1 = cv2.imread('1.jpg', cv2.IMREAD_GRAYSCALE)
 img2 = cv2.imread('2.jpg')
