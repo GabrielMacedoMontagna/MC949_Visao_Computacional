@@ -1,0 +1,15 @@
+# Computer Vision and Image Processing
+opencv-python>=4.8.0
+
+# Scientific Computing and Arrays
+numpy>=1.24.0,<2.0.0
+
+# Data Visualization and Plotting
+matplotlib>=3.7.0
+
+# Optional: Enhanced OpenCV with contrib modules (for additional features)
+# opencv-contrib-python>=4.8.0
+
+# Development and Testing (optional)
+# jupyter>=1.0.0
+# ipython>=8.0.0
