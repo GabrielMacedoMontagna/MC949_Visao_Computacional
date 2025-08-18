@@ -4,6 +4,84 @@ import numpy as np
 import tifffile
 import imageio.v3 as iio
 
+
+try:
+    import rawpy
+except Exception:
+    rawpy = None
+
+import tifffile
+
+def _tiff_linear_dng_to_bgr8(path):
+    """
+    Lê um DNG linear (Photometric 34892) com tifffile, aplica:
+      - BlackLevel / WhiteLevel
+      - AsShotNeutral (WB)
+      - BaselineExposure (EV)
+      - Gamma simples (~sRGB) para exibir
+    Retorna BGR uint8 (compatível com OpenCV).
+    """
+    try:
+        with tifffile.TiffFile(path) as tf:
+            arr = tf.asarray()  # HxWxC, geralmente uint16
+            if arr.ndim == 2:
+                raise RuntimeError("DNG mosaico; use rawpy/LibRaw.")
+            img = arr[..., :3].astype(np.float64)
+
+            tags = tf.pages[0].tags
+            def get_tag(name, default=None):
+                try:
+                    return tags[name].value
+                except KeyError:
+                    return default
+
+            # BlackLevel / WhiteLevel (por canal)
+            bl = get_tag("BlackLevel", 0)
+            wl = get_tag("WhiteLevel", 65535)
+            bl = np.array(bl, dtype=np.float64).ravel()
+            wl = np.array(wl, dtype=np.float64).ravel()
+            if bl.size == 1: bl = np.repeat(bl[0], 3)
+            if wl.size == 1: wl = np.repeat(wl[0], 3)
+            bl = bl[:3]; wl = wl[:3]
+
+            img = np.clip(img - bl.reshape(1,1,3), 0, None)
+            img = img / np.maximum((wl - bl).reshape(1,1,3), 1.0)
+
+            # White balance via AsShotNeutral (se existir)
+            asn = get_tag("AsShotNeutral", None)
+            if asn is not None:
+                asn = np.array(asn, dtype=np.float64).ravel()[:3]
+                wb = 1.0 / asn
+                wb = wb / wb[1]  # normaliza G=1
+                img *= wb.reshape(1,1,3)
+
+            # BaselineExposure (em EV)
+            be = get_tag("BaselineExposure", 0.0)
+            try:
+                img *= (2.0 ** float(be))
+            except Exception:
+                pass
+
+            # Clip para [0,1] e aplica uma gamma ~sRGB p/ visualização
+            img = np.clip(img, 0.0, 1.0)
+            img = np.power(img, 1/2.2)
+
+            # Para OpenCV (uint8 BGR)
+            img8 = (img * 255.0 + 0.5).astype(np.uint8)
+            bgr8 = cv2.cvtColor(img8, cv2.COLOR_RGB2BGR)
+            return bgr8
+
+    except ValueError as e:
+        # tifffile sinaliza JPEG-XL sem imagecodecs com este ValueError
+        if "JPEGXL_DNG" in str(e) or "imagecodecs" in str(e):
+            print("Este DNG usa compressão JPEG-XL. Instale 'imagecodecs' "
+                  "(pip install -U imagecodecs  ou  conda install -c conda-forge imagecodecs).")
+            return None
+        raise
+    except Exception as e:
+        print(f"Erro ao ler DNG linear com tifffile: {e}")
+        return None
+
 # Optional lens correction
 try:
     import lensfunpy, exifread, cv2
