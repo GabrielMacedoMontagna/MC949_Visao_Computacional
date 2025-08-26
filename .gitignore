@@ -2,6 +2,9 @@
 resultados_etapa2/
 resultados_etapa3/
 images-developed-png-16bit/
+images-developed-png-8bit/
+images-developed-tiff-16bit/
+images-developed-tiff-8bit/
 images-normal/
 images-pro/
 .venv/
