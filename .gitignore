@@ -7,3 +7,4 @@ resultados_etapa5/
 images-*/
 etapa*.py
 *.gif
+__pycache__
