@@ -1,9 +1,10 @@
-**/venv_mc949/
+venv_mc949/
 .venv/
 resultados_etapa2/
 resultados_etapa3/
 resultados_etapa4/
 resultados_etapa5/
+Trabalho 2/imagens-t2/
 images-*/
 etapa*.py
 *.gif
