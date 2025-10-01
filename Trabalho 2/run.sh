@@ -8,7 +8,7 @@ set -euo pipefail
 : "${NOTEBOOK_TIMEOUT:=600}"
 
 # Define os notebooks a serem executados
-NOTEBOOKS=("etapa2.ipynb" "etapa3.ipynb" "etapa4nova.ipynb" "visualizacoes_resultados.ipynb")
+NOTEBOOKS=("etapa4.ipynb" "visualizacoes_resultados.ipynb")
 
 # Escolhe executor disponível
 if command -v jupyter >/dev/null 2>&1; then
