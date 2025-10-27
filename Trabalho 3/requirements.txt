@@ -43,3 +43,4 @@ scipy
 open3d
 pycolmap
 timm
+ultralytics==8.3.221
