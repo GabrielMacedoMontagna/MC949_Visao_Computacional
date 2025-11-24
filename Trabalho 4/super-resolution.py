@@ -144,8 +144,8 @@ def main():
     args = parser.parse_args()
 
     root_dir = Path(args.root).resolve()
-    device = "cpu"
-    print(f"Usando device (forçado): {device}")
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print(f"Usando device: {device}")
     print(f"Root Set14: {root_dir}")
 
     upscale_set14_for_scale(
