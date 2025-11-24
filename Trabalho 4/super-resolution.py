@@ -1,3 +1,5 @@
+# para rodar: python super-resolution.py --scale 2 (ou 3 ou 4)
+
 from pathlib import Path
 import argparse
 from contextlib import nullcontext
